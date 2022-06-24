@@ -1,0 +1,26 @@
+version: "3.0"
+services:
+
+    initializer:
+        image: alpine
+        container_name: solr-initializer
+        restart: "no"
+        entrypoint: |
+            /bin/sh -c "chown 8983:8983 /solr"
+        volumes:
+            - ./solr_data:/solr
+    solr:
+        build:
+            context: .
+            dockerfile: dockerfiles/Dockerfile.solr
+        container_name: solr
+        volumes:
+            - ./documents:/opt/solr-9.0.0/documents
+            - ./solr_data:/var/solr/data
+        ports:
+            - "8983:8983"
+        command:
+            - solr-precreate
+            - gettingstarted
+        depends_on:
+            - initializer
